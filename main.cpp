@@ -17,9 +17,9 @@
 #define EMBEDDINGS_EACH_BANK    256000               // Vector num in 1 Bank
 #define MAX_K                   1024                // Top-1024 at most
 // LSH Args
-#define K                       4                   // K-bit Flags
+#define K                       5                   // K-bit Flags
 #define L                       1                   // Hash Table num
-#define T                       1                   // Hamming distance 
+#define T                       0                   // Hamming distance 
 
 typedef unsigned char int_8;
 
@@ -153,11 +153,12 @@ int main() {
             // Find all buckets in hamming distance L(L = 1)
             std::vector<int> indexs;
             indexs.insert(indexs.end(), table[j].bucket[index].begin(), table[j].bucket[index].end());
-            for (int k = 0; k < K; k++) {
-                // Change k-th bit of index
-                int neighbor = index ^ (1 << k);
-                indexs.insert(indexs.end(), table[j].bucket[neighbor].begin(), table[j].bucket[neighbor].end());
-            }
+            if (T)
+                for (int k = 0; k < K; k++) {
+                    // Change k-th bit of index
+                    int neighbor = index ^ (1 << k);
+                    indexs.insert(indexs.end(), table[j].bucket[neighbor].begin(), table[j].bucket[neighbor].end());
+                }
             std::cout << "Hit table " << j << "(index=" << index << "'s Neighbors) " << indexs.size() << std::endl;
             std::set<int> tmp(indexs.begin(), indexs.end());
             if (j == 0)
